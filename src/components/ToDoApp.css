@@ -196,6 +196,33 @@ li button:hover {
   color: #555;
 }
 
+.todo-item.overdue {
+  color: red;
+  font-weight: bold;
+}
+
+.todo-item.soon {
+  color: orange;
+}
+
+.due-date {
+  font-size: 0.9em;
+  margin-left: 10px;
+  color: #666;
+}
+
+.low-priority {
+  border-left: 5px solid green;
+}
+
+.medium-priority {
+  border-left: 5px solid orange;
+}
+
+.high-priority {
+  border-left: 5px solid red;
+}
+
 @media (max-width: 768px) {
   .app-container {
     padding: 10px;

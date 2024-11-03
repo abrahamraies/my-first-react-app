@@ -5,10 +5,13 @@ import "./ToDoApp.css";
 function TodoApp() {
   const [input, setInput] = useState("");
   const [filter, setFilter] = useState("all"); // 'all', 'completed', or 'uncompleted'
+  const [dueDate, setDueDate] = useState(null);
+  const [priority, setPriority] = useState("Low");
   const [todos, setTodos] = useState(() => {
     const savedTodos = localStorage.getItem('todos');
     return savedTodos ? JSON.parse(savedTodos) : [];
   });
+  
 
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
@@ -17,8 +20,10 @@ function TodoApp() {
 
   const addTodo = () => {
     if (input.trim()) {
-      setTodos([...todos, { text: input, completed: false }]);
+      setTodos([...todos, { text: input, dueDate, priority, completed: false }]);
       setInput("");
+      setDueDate(null);
+      setPriority("Low");
     }
   };
 
@@ -68,6 +73,22 @@ function TodoApp() {
           onChange={(e) => setInput(e.target.value)}
           className="todo-input"
         />
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          className="todo-input"
+        />
+
+        <select
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
+          className="priority-dropdown"
+        >
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
 
         <button onClick={addTodo} className="add-button">Add Task</button>
       </div>
