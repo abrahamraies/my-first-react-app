@@ -5,7 +5,7 @@ import "./ToDoApp.css";
 function TodoApp() {
   const [input, setInput] = useState("");
   const [filter, setFilter] = useState("all"); // 'all', 'completed', or 'uncompleted'
-  const [dueDate, setDueDate] = useState(null);
+  const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("Low");
   const [todos, setTodos] = useState(() => {
     const savedTodos = localStorage.getItem('todos');
@@ -17,12 +17,38 @@ function TodoApp() {
     localStorage.setItem('todos', JSON.stringify(todos));
   }, [todos]);
 
+  useEffect(() => {
+    if (Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    const checkDueTasks = () => {
+      const now = new Date();
+      todos.forEach((todo) => {
+        if (
+          todo.dueDate &&
+          new Date(todo.dueDate) - now <= 24 * 60 * 60 * 1000 &&
+          new Date(todo.dueDate) > now
+        ) {
+          new Notification("Reminder", {
+            body: `Task "${todo.text}" is due soon!`,
+          });
+        }
+      });
+    };
+
+    const interval = setInterval(checkDueTasks, 60000);
+    return () => clearInterval(interval);
+  }, [todos]);
+
 
   const addTodo = () => {
     if (input.trim()) {
       setTodos([...todos, { text: input, dueDate, priority, completed: false }]);
       setInput("");
-      setDueDate(null);
+      setDueDate("");
       setPriority("Low");
     }
   };
