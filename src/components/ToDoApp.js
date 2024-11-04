@@ -8,13 +8,12 @@ function TodoApp() {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("Low");
   const [todos, setTodos] = useState(() => {
-    const savedTodos = localStorage.getItem('todos');
+    const savedTodos = localStorage.getItem("todos");
     return savedTodos ? JSON.parse(savedTodos) : [];
   });
-  
 
   useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos));
+    localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
   useEffect(() => {
@@ -43,10 +42,12 @@ function TodoApp() {
     return () => clearInterval(interval);
   }, [todos]);
 
-
   const addTodo = () => {
     if (input.trim()) {
-      setTodos([...todos, { text: input, dueDate, priority, completed: false }]);
+      setTodos([
+        ...todos,
+        { text: input, dueDate, priority, completed: false },
+      ]);
       setInput("");
       setDueDate("");
       setPriority("Low");
@@ -66,25 +67,39 @@ function TodoApp() {
   };
 
   const filteredTodos = () => {
+    let sortedTodos = [...todos];
+
+    sortedTodos.sort((a, b) => {
+      const dateA = new Date(a.dueDate);
+      const dateB = new Date(b.dueDate);
+
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+
+      return dateA - dateB;
+    });
+
     if (filter === "completed") {
-      return todos.filter((todo) => todo.completed);
+      return sortedTodos.filter((todo) => todo.completed);
     } else if (filter === "uncompleted") {
-      return todos.filter((todo) => !todo.completed);
+      return sortedTodos.filter((todo) => !todo.completed);
     }
-    return todos; // 'all' case
+    return sortedTodos; // 'all' case
   };
 
   const editToDo = (index) => {
     setTodos(
-        todos.map((todo,i) => 
-            i === index ? { ...todo, isEditing: true } : todo )
+      todos.map((todo, i) =>
+        i === index ? { ...todo, isEditing: true } : todo
+      )
     );
   };
 
   const updateToDoText = (index, newText) => {
     setTodos(
-        todos.map((todo,i) => 
-            i === index ? { ...todo,text: newText, isEditing: false }: todo )
+      todos.map((todo, i) =>
+        i === index ? { ...todo, text: newText, isEditing: false } : todo
+      )
     );
   };
 
@@ -116,13 +131,27 @@ function TodoApp() {
           <option value="High">High</option>
         </select>
 
-        <button onClick={addTodo} className="add-button">Add Task</button>
+        <button onClick={addTodo} className="add-button">
+          Add Task
+        </button>
       </div>
 
       <div className="filter-section">
-        <button onClick={() => setFilter("all")} className="filter-button">All</button>
-        <button onClick={() => setFilter("completed")} className="filter-button">Completed</button>
-        <button onClick={() => setFilter("uncompleted")} className="filter-button">Uncompleted</button>
+        <button onClick={() => setFilter("all")} className="filter-button">
+          All
+        </button>
+        <button
+          onClick={() => setFilter("completed")}
+          className="filter-button"
+        >
+          Completed
+        </button>
+        <button
+          onClick={() => setFilter("uncompleted")}
+          className="filter-button"
+        >
+          Uncompleted
+        </button>
       </div>
       <ul className="todo-list">
         {filteredTodos().map((todo, index) => (
